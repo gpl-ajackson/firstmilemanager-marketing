@@ -1,0 +1,11 @@
+/*
+ * First Mile Manager brand colours. See brand/README.md for when to use each one.
+ * Route teal is the one accent. The other values are its text-safe shade and the neutrals.
+ */
+:root {
+  --fmm-route-teal: #0d9488;      /* the accent: buttons, highlights, the mark */
+  --fmm-route-teal-text: #0f766e; /* small accent text (links) on light backgrounds */
+  --fmm-ink: #0f1a1e;             /* text on light; text on a route teal fill */
+  --fmm-paper: #ffffff;           /* light background */
+  --fmm-night: #0b1215;           /* dark background */
+}
