@@ -1,0 +1,32 @@
+---
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  text?: string;
+}
+
+const {
+  title = 'Help shape First Mile Manager',
+  text = 'Early access businesses use it first, with nothing to pay, and have a direct say in what we build next.',
+} = Astro.props;
+---
+
+<section class="container-page mt-20">
+  <div class="rounded-[12px] bg-night px-6 py-12 text-white sm:px-12">
+    <div class="max-w-2xl">
+      <h2 class="text-3xl font-bold tracking-tight text-balance">{title}</h2>
+      <p class="mt-4 text-lg text-white/80">{text}</p>
+    </div>
+    <div class="mt-8 flex flex-wrap gap-3">
+      <a href="/early-access" class="btn btn-primary">Apply for early access</a>
+      {
+        site.demo.live && (
+          <a href={site.demo.url} class="btn border border-white/40 text-white hover:border-white">
+            Try the demo
+          </a>
+        )
+      }
+    </div>
+  </div>
+</section>
