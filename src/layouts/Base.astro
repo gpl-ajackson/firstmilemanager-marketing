@@ -1,0 +1,155 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { pagePath, site } from '../data/site';
+
+interface Crumb {
+  name: string;
+  href: string;
+}
+
+interface Props {
+  title: string;
+  description: string;
+  /** Extra JSON-LD objects for this page. */
+  schema?: Record<string, unknown>[];
+  /** Breadcrumb trail after Home, used for the visible trail and BreadcrumbList. */
+  breadcrumbs?: Crumb[];
+  noindex?: boolean;
+  ogImage?: string;
+}
+
+const { title, description, schema = [], breadcrumbs = [], noindex = false, ogImage = '/og-default.png' } = Astro.props;
+
+const path = pagePath(Astro.url.pathname);
+const canonical = new URL(path, site.url).href;
+const fullTitle = path === '/' ? `${site.name}: ${site.tagline}` : `${title} | ${site.name}`;
+const ogImageUrl = new URL(ogImage, site.url).href;
+// Plausible sets no cookies and stores nothing on the device, so it needs no consent banner. It loads only in
+// Cloudflare's production build of main, so previews and local builds aren't counted, and not at all in a browser
+// that turned statistics off on the cookie notice (see AnalyticsOptOut.astro).
+const plausibleScript = process.env.CF_PAGES_BRANCH === 'main' ? (site.plausibleScript ?? undefined) : undefined;
+
+const organization = {
+  '@context': 'https://schema.org',
+  '@type': 'Organization',
+  '@id': `${site.url}/#organization`,
+  name: site.name,
+  url: site.url,
+  email: site.email,
+  logo: `${site.url}/logo.png`,
+  description: site.description,
+  areaServed: site.country,
+  parentOrganization: {
+    '@type': 'Organization',
+    legalName: site.company.legalName,
+    alternateName: site.company.tradingName,
+    identifier: site.company.number,
+    address: {
+      '@type': 'PostalAddress',
+      streetAddress: site.company.address.street,
+      addressLocality: site.company.address.town,
+      addressRegion: site.company.address.county,
+      postalCode: site.company.address.postcode,
+      addressCountry: site.company.address.country,
+    },
+  },
+};
+
+const breadcrumbSchema =
+  breadcrumbs.length > 0
+    ? {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: [{ name: 'Home', href: '/' }, ...breadcrumbs].map((crumb, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: crumb.name,
+          item: new URL(crumb.href, site.url).href,
+        })),
+      }
+    : null;
+
+const jsonLd = [organization, breadcrumbSchema, ...schema].filter(Boolean);
+---
+
+<!doctype html>
+<html lang="en-GB">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex" />}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <meta name="theme-color" content="#0f1a1e" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    {jsonLd.map((item) => <script type="application/ld+json" set:html={JSON.stringify(item)} />)}
+    {
+      plausibleScript && (
+        <script is:inline define:vars={{ plausibleScript }}>
+          window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};
+          plausible.init();
+          var statisticsOff = false;
+          try { statisticsOff = localStorage.getItem('plausible_ignore') === 'true'; } catch (e) {}
+          if (!statisticsOff) {
+            var plausibleTag = document.createElement('script');
+            plausibleTag.async = true;
+            plausibleTag.src = plausibleScript;
+            document.head.appendChild(plausibleTag);
+          }
+        </script>
+      )
+    }
+  </head>
+  <body class="flex min-h-screen flex-col font-sans antialiased">
+    <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-paper focus:px-4 focus:py-2">
+      Skip to content
+    </a>
+    <Header />
+    <main id="main" class="flex-1">
+      {
+        breadcrumbs.length > 0 && (
+          <nav aria-label="Breadcrumb" class="container-page pt-6 text-sm text-muted">
+            <ol class="flex flex-wrap gap-2">
+              <li>
+                <a href="/" class="hover:text-ink">Home</a>
+              </li>
+              {breadcrumbs.map((crumb, index) => (
+                <li class="flex gap-2">
+                  <span aria-hidden="true">/</span>
+                  {index === breadcrumbs.length - 1 ? (
+                    <span aria-current="page">{crumb.name}</span>
+                  ) : (
+                    <a href={crumb.href} class="hover:text-ink">
+                      {crumb.name}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+        )
+      }
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

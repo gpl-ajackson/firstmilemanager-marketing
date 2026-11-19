@@ -1,0 +1,46 @@
+---
+/**
+ * Works the "Turn statistics off" control written in the cookie notice (src/content/legal/cookies.md).
+ * Plausible ignores a browser whose local storage holds plausible_ignore = "true"
+ * (https://plausible.io/docs/excluding-localstorage), and Base.astro then doesn't load its script at all.
+ * That one note is all the opt-out stores: no cookie.
+ */
+---
+
+<script>
+  const key = 'plausible_ignore';
+
+  for (const control of document.querySelectorAll<HTMLElement>('[data-analytics-opt-out]')) {
+    const status = control.querySelector<HTMLElement>('[data-analytics-opt-out-status]');
+    const button = control.querySelector<HTMLButtonElement>('[data-analytics-opt-out-button]');
+    if (!status || !button) continue;
+
+    const isOff = () => localStorage.getItem(key) === 'true';
+
+    const show = () => {
+      const off = isOff();
+      status.textContent = off
+        ? 'Statistics are off in this browser: your visits are not counted.'
+        : 'Statistics are on in this browser: your visits are counted.';
+      button.textContent = off ? 'Turn statistics back on' : 'Turn statistics off';
+      button.hidden = false;
+    };
+
+    try {
+      show();
+      button.addEventListener('click', () => {
+        try {
+          if (isOff()) localStorage.removeItem(key);
+          else localStorage.setItem(key, 'true');
+          show();
+        } catch {
+          status.textContent = 'Your browser didn’t let this website save your choice. Blocking scripts for this website also stops your visits being counted.';
+        }
+      });
+    } catch {
+      // Local storage is blocked, so the choice can't be remembered.
+      status.textContent =
+        'Your browser doesn’t let this website store your choice. Blocking scripts for this website also stops your visits being counted.';
+    }
+  }
+</script>
