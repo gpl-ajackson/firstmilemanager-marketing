@@ -1,21 +1,197 @@
 ---
 import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+import FeatureCard from '../components/FeatureCard.astro';
+import StatusBadge from '../components/StatusBadge.astro';
+import { featureAreas } from '../data/features';
+import { faqSchema, type FaqItem } from '../data/schema';
 import { site } from '../data/site';
+
+const pillars = [
+  {
+    title: 'Clients book for themselves',
+    text: 'Your clients book collections, get a price and see where their goods are without ringing you. Booking emails and calls stop piling up.',
+  },
+  {
+    title: 'Plan rounds in minutes',
+    text: 'See tomorrow’s collections on one page and build each vehicle’s round, then send it to the driver’s phone or print a runsheet.',
+  },
+  {
+    title: 'Bill every collection',
+    text: 'Each collection is priced from the client’s rate card as it is booked, and failed collections are charged by your rules. Nothing waits for month end.',
+  },
+  {
+    title: 'Know what makes money',
+    text: 'See profit by client, round and vehicle, including what you pay to send goods on, so you know which work to chase.',
+  },
+];
+
+const roles = [
+  { title: 'Owners', text: 'See which clients, rounds and vehicles make you money, without asking anyone.' },
+  { title: 'Finance managers', text: 'Prices set once on rate cards, and every collection on the invoice.' },
+  { title: 'Transport managers', text: 'Plan tomorrow, invite your drivers, and see each round as it happens.' },
+  { title: 'Account managers', text: 'Each client’s addresses, contacts and collections on one page, so queries are quick.' },
+  { title: 'Drivers and the warehouse team', text: 'One clear job at a time, on a phone or on paper, and check-in by scanning.' },
+  { title: 'Your clients', text: 'Book, track and get updates without waiting on the phone.' },
+];
+
+const plan = [
+  { time: '08:30', client: 'Sherwood Print Works', what: '6 parcels', vehicle: 'Van 1' },
+  { time: '09:15', client: 'Beeston Bike Parts', what: '2 parcels', vehicle: 'Van 1' },
+  { time: '10:00', client: 'Brew Republic Coffee Co.', what: '4 pallets', vehicle: 'Lorry' },
+  { time: '11:30', client: 'Netherfield Joinery', what: '1 pallet', vehicle: 'Lorry' },
+];
+
+const faqs: FaqItem[] = [
+  {
+    question: 'Who is First Mile Manager for?',
+    answer:
+      'Small couriers and hauliers in the UK that collect parcels, pallets or post from local businesses and send them on through carriers, pallet networks or their own vehicles. It suits owner-run businesses where the owner may also drive on a busy day.',
+  },
+  {
+    question: 'Is First Mile Manager available now?',
+    answer:
+      'First Mile Manager is in early access. We are building it in stages with a small group of couriers and hauliers: first your team and your clients, then bookings, collection rounds and billing. Every part on this site is labelled as in development until you can try it in the demo.',
+  },
+  {
+    question: 'Do I need other software to use it?',
+    answer:
+      'No. First Mile Manager works on its own. If you also store goods for your clients, it can work with a warehouse system, so the clients you collect for and the goods you check in are not typed twice.',
+  },
+  {
+    question: 'How do I get early access?',
+    answer: 'Apply on our early access page. We reply personally within two working days.',
+  },
+];
 ---
 
 <Base
   title="Collection software for couriers and hauliers"
-  description={site.description}
-  schema={[{ '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: site.url, inLanguage: 'en-GB' }]}
+  description="First Mile Manager takes your clients’ bookings, plans your collection rounds and bills each client at the right rate. Now in early access."
+  schema={[
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebSite',
+      name: site.name,
+      url: site.url,
+      inLanguage: 'en-GB',
+    },
+    faqSchema(faqs),
+  ]}
 >
   <section class="border-b border-line bg-wash">
-    <div class="container-page py-16 sm:py-24">
-      <p class="eyebrow">Now in early access</p>
-      <h1 class="mt-4 max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">{site.tagline}</h1>
-      <p class="mt-6 max-w-2xl text-lg text-ink-soft text-pretty sm:text-xl">{site.description}</p>
-      <div class="mt-8">
-        <a href="/early-access" class="btn btn-primary">Apply for early access</a>
+    <div class="container-page grid items-center gap-12 py-16 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
+      <div>
+        <p class="eyebrow">Now in early access · For small couriers and hauliers</p>
+        <h1 class="mt-4 text-4xl font-bold tracking-tight text-balance sm:text-6xl">{site.tagline}</h1>
+        <p class="mt-6 max-w-xl text-lg text-ink-soft text-pretty sm:text-xl">
+          First Mile Manager takes your clients’ bookings, plans your collection rounds and bills each client at the right rate. Built for
+          businesses that collect from local firms and send it on.
+        </p>
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href="/early-access" class="btn btn-primary">Apply for early access</a>
+          {site.demo.live && <a href={site.demo.url} class="btn btn-secondary">Try the demo</a>}
+        </div>
+        <p class="mt-6 text-sm text-muted">Nothing to pay in early access · Works on a phone, in the office or on paper</p>
       </div>
+
+      <figure class="min-w-0 rounded-2xl border border-line bg-paper p-5 shadow-sm" aria-label="Illustration of tomorrow’s collections">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <p class="text-sm font-semibold">Trentside Logistics · Tomorrow’s collections</p>
+          <StatusBadge status="in-development" />
+        </div>
+        <table class="mt-4 w-full text-left text-sm">
+          <caption class="sr-only">Example collections planned for tomorrow</caption>
+          <thead class="text-xs uppercase tracking-wide text-muted">
+            <tr>
+              <th scope="col" class="pb-2 font-semibold">Time</th>
+              <th scope="col" class="pb-2 font-semibold">Client</th>
+              <th scope="col" class="pb-2 text-right font-semibold">Vehicle</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-line">
+            {
+              plan.map((row) => (
+                <tr>
+                  <td class="py-2 pr-2 align-top tabular-nums">{row.time}</td>
+                  <td class="py-2 pr-2">
+                    <span class="font-medium">{row.client}</span>
+                    <span class="block text-muted">{row.what}</span>
+                  </td>
+                  <td class="py-2 text-right align-top">{row.vehicle}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <div class="mt-4 rounded-xl border border-line bg-wash p-4 text-sm">
+          <p class="font-semibold">Booked by the client, priced from their rate card</p>
+          <p class="mt-1 text-ink-soft">Beeston Bike Parts · 2 parcels, next day · £14.40</p>
+        </div>
+        <figcaption class="mt-3 text-xs text-muted">Illustration, with the made-up businesses from our Trentside demo.</figcaption>
+      </figure>
     </div>
   </section>
+
+  <section class="container-page mt-20">
+    <div class="max-w-3xl">
+      <h2 class="text-3xl font-bold tracking-tight text-balance sm:text-4xl">Stop running collections from your inbox</h2>
+      <p class="mt-4 text-lg text-ink-soft">
+        Bookings arrive by email, phone and text. Rounds are planned on a whiteboard. Billing means going back through the week to work out
+        who owes what. First Mile Manager puts each of those in one place, so you spend the day collecting, not chasing.
+      </p>
+    </div>
+    <div class="mt-10 grid gap-6 sm:grid-cols-2">
+      {
+        pillars.map((pillar) => (
+          <article class="rounded-xl border border-line p-6">
+            <div class="flex flex-wrap items-center justify-between gap-2">
+              <h3 class="text-xl font-semibold">{pillar.title}</h3>
+              <StatusBadge status="in-development" />
+            </div>
+            <p class="mt-3 text-ink-soft">{pillar.text}</p>
+          </article>
+        ))
+      }
+    </div>
+  </section>
+
+  <section class="container-page mt-20">
+    <h2 class="text-3xl font-bold tracking-tight">Built for everyone who touches a collection</h2>
+    <p class="mt-4 max-w-3xl text-lg text-ink-soft">From the office to the van door, each person sees the jobs that are theirs, and nothing else.</p>
+    <ul class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        roles.map((role) => (
+          <li class="rounded-xl border border-line p-6">
+            <h3 class="text-lg font-semibold">{role.title}</h3>
+            <p class="mt-2 text-ink-soft">{role.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="mt-20 bg-wash py-20">
+    <div class="container-page">
+      <div class="max-w-2xl">
+        <h2 class="text-3xl font-bold tracking-tight">What we’re building, in order</h2>
+        <p class="mt-4 text-lg text-ink-soft">
+          We build First Mile Manager in stages with our early access businesses. Each part is labelled until you can try it in the demo.
+        </p>
+      </div>
+      <ol class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {
+          featureAreas.map((feature) => (
+            <li>
+              <FeatureCard feature={feature} showPoints showGuide />
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <Faq items={faqs} />
+  <CtaBand />
 </Base>

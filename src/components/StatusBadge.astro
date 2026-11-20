@@ -1,0 +1,19 @@
+---
+import { statusLabel, type FeatureStatus } from '../data/features';
+
+interface Props {
+  status: FeatureStatus;
+}
+
+const { status } = Astro.props;
+---
+
+<span
+  class:list={[
+    'inline-flex items-center gap-1.5 rounded-[3px] px-2 py-0.5 text-xs font-bold',
+    status === 'available' ? 'bg-live-wash text-live' : 'bg-roadmap-wash text-roadmap',
+  ]}
+>
+  <span aria-hidden="true" class:list={['size-1.5', status === 'available' ? 'bg-live' : 'bg-roadmap']}></span>
+  {statusLabel[status]}
+</span>
