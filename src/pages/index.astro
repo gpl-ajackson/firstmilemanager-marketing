@@ -1,0 +1,21 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../data/site';
+---
+
+<Base
+  title="Collection software for couriers and hauliers"
+  description={site.description}
+  schema={[{ '@context': 'https://schema.org', '@type': 'WebSite', name: site.name, url: site.url, inLanguage: 'en-GB' }]}
+>
+  <section class="border-b border-line bg-wash">
+    <div class="container-page py-16 sm:py-24">
+      <p class="eyebrow">Now in early access</p>
+      <h1 class="mt-4 max-w-3xl text-4xl font-bold tracking-tight text-balance sm:text-6xl">{site.tagline}</h1>
+      <p class="mt-6 max-w-2xl text-lg text-ink-soft text-pretty sm:text-xl">{site.description}</p>
+      <div class="mt-8">
+        <a href="/early-access" class="btn btn-primary">Apply for early access</a>
+      </div>
+    </div>
+  </section>
+</Base>

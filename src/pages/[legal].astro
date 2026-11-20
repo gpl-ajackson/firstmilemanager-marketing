@@ -1,0 +1,41 @@
+---
+import { getCollection, render } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import AnalyticsOptOut from '../components/AnalyticsOptOut.astro';
+
+export async function getStaticPaths() {
+  const pages = await getCollection('legal');
+  // A published page must not go live with a gap left for someone to fill in (the help centre's
+  // host went live as "[AJ to fill in: ...]" on the privacy notice this way).
+  for (const page of pages) {
+    if (!page.data.draft && /to fill in/i.test(page.body ?? '')) {
+      throw new Error(`src/content/legal/${page.id}.md is published (draft: false) but still has a "to fill in" gap.`);
+    }
+  }
+  return pages.map((page) => ({ params: { legal: page.id }, props: { page } }));
+}
+
+const { page } = Astro.props;
+const { Content } = await render(page);
+---
+
+<Base
+  title={page.data.title}
+  description={page.data.description}
+  breadcrumbs={[{ name: page.data.title, href: `/${page.id}` }]}
+  noindex={page.data.draft}
+>
+  {
+    page.data.draft && (
+      <div class="border-b border-roadmap/30 bg-roadmap-wash">
+        <p class="container-page py-3 text-sm font-semibold text-roadmap">Draft for review. This page has not been legally reviewed yet.</p>
+      </div>
+    )
+  }
+  <article class="container-page prose prose-slate max-w-3xl py-12 prose-a:text-brand-strong">
+    <h1>{page.data.title}</h1>
+    <p class="text-sm text-muted">Last updated {page.data.updated.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+    <Content />
+  </article>
+  {page.id === 'cookies' && <AnalyticsOptOut />}
+</Base>

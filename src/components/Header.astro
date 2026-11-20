@@ -1,0 +1,69 @@
+---
+import Logo from './Logo.astro';
+import { nav, pagePath } from '../data/site';
+
+const current = pagePath(Astro.url.pathname);
+const isCurrent = (href: string) => current === href || current.startsWith(`${href}/`);
+// While the site has only a few pages there is no menu; the early access button is the one action.
+const hasNav = nav.length > 0;
+---
+
+<header class="border-b border-line bg-paper">
+  <div class="container-page flex h-16 items-center justify-between gap-4">
+    <a href="/" class="min-w-0 shrink">
+      <Logo class="h-7 w-auto max-w-full sm:h-8" />
+    </a>
+
+    {
+      hasNav && (
+        <nav aria-label="Main" class="hidden md:block">
+          <ul class="flex items-center gap-6 text-[0.9375rem] font-medium text-ink-soft">
+            {nav.map((item) => (
+              <li>
+                <a
+                  href={item.href}
+                  class:list={['hover:text-ink', isCurrent(item.href) && 'text-ink underline decoration-brand decoration-[3px] underline-offset-8']}
+                  aria-current={isCurrent(item.href) ? 'page' : undefined}
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      )
+    }
+
+    <div class="flex shrink-0 items-center gap-3">
+      <a href="/early-access" class:list={['btn btn-primary !py-2 text-sm', hasNav && 'hidden sm:inline-flex']}>
+        <span class="sm:hidden">Early access</span><span class="hidden sm:inline">Apply for early access</span>
+      </a>
+
+      {
+        hasNav && (
+          <details class="group relative md:hidden">
+            <summary class="flex cursor-pointer list-none items-center rounded-lg border border-line px-3 py-2 text-sm font-semibold [&::-webkit-details-marker]:hidden">
+              Menu
+            </summary>
+            <nav aria-label="Mobile" class="absolute right-0 z-40 mt-2 w-64 rounded-xl border border-line bg-paper p-2 shadow-lg">
+              <ul class="flex flex-col">
+                {nav.map((item) => (
+                  <li>
+                    <a href={item.href} class="block rounded-lg px-3 py-3 font-medium hover:bg-wash">
+                      {item.label}
+                    </a>
+                  </li>
+                ))}
+                <li class="mt-2 border-t border-line pt-2">
+                  <a href="/early-access" class="btn btn-primary w-full">
+                    Apply for early access
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </details>
+        )
+      }
+    </div>
+  </div>
+</header>
