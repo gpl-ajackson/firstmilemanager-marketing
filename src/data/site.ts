@@ -29,6 +29,18 @@ export const site = {
   },
 
   /**
+   * Early access applications are made on the CloudBusiness account site, never here
+   * (cloudbusiness-subscription-site ADR 0006). The early access page's "Apply" button is the
+   * product's Start Link, https://account.cloudbusiness.software/start/<product key>, which opens
+   * the account site's Early Access Application while the product is in Early Access there. Set
+   * startLink once the account site is live and its Catalogue lists First Mile Manager; while it is
+   * null, the page asks people to email their application instead. See README, "Early access".
+   */
+  earlyAccess: {
+    startLink: null as string | null,
+  },
+
+  /**
    * The public Trentside Logistics demo. "Try the demo" arrives in slice 1, when the demo has
    * clients to show; until then live stays false and no page links to it.
    */

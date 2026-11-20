@@ -1,0 +1,128 @@
+---
+import Base from '../layouts/Base.astro';
+import Faq from '../components/Faq.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { faqSchema, type FaqItem } from '../data/schema';
+import { site } from '../data/site';
+
+const startLink = site.earlyAccess.startLink;
+
+const gets = [
+  'First Mile Manager for your business while it is in early access, with nothing to pay',
+  'Every new part as soon as it is ready, before anyone else',
+  'A direct say in what we build next, and in what order',
+  'Help from the people who build it, by email and on a call',
+];
+
+const asks = [
+  'A 45-minute conversation about how you run collections today: bookings, rounds and billing',
+  'Trying new parts as they arrive and telling us honestly what works and what doesn’t',
+  'If First Mile Manager earns it, a short review once you are running on it',
+];
+
+const faqs: FaqItem[] = [
+  {
+    question: 'Who is early access for?',
+    answer:
+      'Small couriers and hauliers in the UK that collect parcels, pallets or post from local businesses and send them on. If you are not sure you fit, apply anyway and tell us about your business.',
+  },
+  {
+    question: 'Is First Mile Manager ready to use?',
+    answer:
+      'Not all of it yet. We are building it in stages with our early access businesses, starting with your team and your clients, then bookings, collection rounds and billing. We tell you what is ready and what is coming, and you choose when to start using it.',
+  },
+  {
+    question: 'What does it cost?',
+    answer: 'Nothing while you are in early access. We will tell you our prices well before you pay anything, and you can stop at any time.',
+  },
+  {
+    question: 'What happens after I apply?',
+    answer:
+      'You see a confirmation straight away, and we reply personally within two working days. If First Mile Manager fits your business, we send you an invitation to sign up.',
+  },
+];
+---
+
+<Base
+  title="Apply for early access"
+  description="Try First Mile Manager early, with nothing to pay, and help shape how bookings, collection rounds and billing work for small couriers and hauliers."
+  breadcrumbs={[{ name: 'Early access', href: '/early-access' }]}
+  schema={[faqSchema(faqs)]}
+>
+  <PageHeader
+    eyebrow="Early access"
+    title="Build First Mile Manager with us"
+    lead="We’re building First Mile Manager with a small group of couriers and hauliers. Early access businesses use it first, tell us what works, and shape what comes next."
+  />
+
+  <div class="container-page grid gap-12 lg:grid-cols-[1fr_1.1fr]">
+    <div class="space-y-10">
+      <section aria-labelledby="get-heading">
+        <h2 id="get-heading" class="text-2xl font-bold tracking-tight">What you get</h2>
+        <ul class="mt-4 space-y-3">
+          {
+            gets.map((item) => (
+              <li class="flex gap-3">
+                <span aria-hidden="true" class="mt-0.5 font-bold text-brand-strong">✓</span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+      <section aria-labelledby="ask-heading">
+        <h2 id="ask-heading" class="text-2xl font-bold tracking-tight">What we ask</h2>
+        <ul class="mt-4 space-y-3">
+          {
+            asks.map((item) => (
+              <li class="flex gap-3">
+                <span aria-hidden="true" class="mt-0.5 text-brand-strong">→</span>
+                <span>{item}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </section>
+    </div>
+
+    <section id="apply" class="rounded-2xl border border-line p-6 sm:p-8" aria-labelledby="apply-heading">
+      <h2 id="apply-heading" class="text-2xl font-bold tracking-tight">Apply</h2>
+      {
+        startLink ? (
+          <div class="mt-4 space-y-4 text-ink-soft">
+            <p>
+              It takes about three minutes. We ask for your name, your business, your role, how many vehicles you run, what you use today and
+              what you’d most like to fix.
+            </p>
+            <p>
+              You apply on the CloudBusiness account site, where we run early access for all our products. You’ll see a confirmation as soon
+              as you send it, and we reply personally within two working days.
+            </p>
+            <a href={startLink} class="btn btn-primary">
+              Apply for early access
+            </a>
+            <p class="text-sm text-muted">
+              Questions first? Email <a href={`mailto:${site.email}`} class="link">{site.email}</a>.
+            </p>
+          </div>
+        ) : (
+          <div class="mt-4 space-y-4 text-ink-soft">
+            <p>
+              Email us at{' '}
+              <a href={`mailto:${site.email}?subject=Early%20access%20application`} class="link font-semibold">
+                {site.email}
+              </a>{' '}
+              with your name, your business, your role, how many vehicles you run, what you use today and what you’d most like to fix.
+            </p>
+            <p>We reply personally within two working days.</p>
+            <p class="text-sm text-muted">
+              We use your details only to reply to your application. See our <a href="/privacy" class="link">privacy notice</a>.
+            </p>
+          </div>
+        )
+      }
+    </section>
+  </div>
+
+  <Faq items={faqs} />
+</Base>

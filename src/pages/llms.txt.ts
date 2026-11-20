@@ -14,6 +14,7 @@ export const GET: APIRoute = () => {
     '## Pages',
     '',
     `- [Home](${site.url}/): what First Mile Manager is for and who it suits`,
+    `- [Early access](${site.url}/early-access): how to apply, what you get and what we ask`,
     ...(site.helpUrl
       ? [`- [Help centre](${site.helpUrl}): how to use First Mile Manager; its own llms.txt (${site.helpUrl}/llms.txt) lists every guide`]
       : []),
