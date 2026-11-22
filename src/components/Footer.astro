@@ -1,4 +1,5 @@
 ---
+import Endorsement from './Endorsement.astro';
 import Logo from './Logo.astro';
 import { site } from '../data/site';
 
@@ -9,6 +10,7 @@ const columns = [
     heading: 'First Mile Manager',
     links: [
       { label: 'Home', href: '/' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'Early access', href: '/early-access' },
       ...(site.demo.live ? [{ label: 'Try the demo', href: site.demo.url }] : []),
       ...(site.helpUrl ? [{ label: 'Help centre', href: site.helpUrl }] : []),
@@ -35,6 +37,7 @@ const columns = [
       <p class="mt-4 text-sm text-muted">
         Software for small couriers and hauliers that collect from local businesses. Now in early access.
       </p>
+      <Endorsement class="mt-5 h-5 w-auto" />
     </div>
     {
       columns.map((column) => (

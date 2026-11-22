@@ -1,0 +1,163 @@
+---
+import Base from '../layouts/Base.astro';
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+import PageHeader from '../components/PageHeader.astro';
+import { formatPence, formatPrice, fromPrice, pricing } from '../data/pricing';
+import { faqSchema, type FaqItem } from '../data/schema';
+import { site } from '../data/site';
+
+const faqs: FaqItem[] = [
+  {
+    question: 'What counts as an active vehicle?',
+    answer: `${pricing.activeVehicle} Your drivers, office team and clients are never counted.`,
+  },
+  {
+    question: 'When do we start paying?',
+    answer: `${pricing.start} Your card is taken when you sign up, and we email you before the first charge.`,
+  },
+  {
+    question: 'What if we run more vehicles than our plan covers?',
+    answer: `${pricing.planChoice} A busy month on its own changes nothing.`,
+  },
+  {
+    question: 'What do text messages cost?',
+    answer: pricing.texts.note,
+  },
+  {
+    question: 'Is there a contract?',
+    answer: `No. ${pricing.terms.replace('No contract: ', '').replace(/^./, (letter) => letter.toUpperCase())} ${pricing.yearly}`,
+  },
+  {
+    question: 'Do prices include VAT?',
+    answer: 'No. All prices are in pounds sterling and exclude VAT, which is added at the standard rate.',
+  },
+];
+
+// Prices reach structured data only once confirmed (see src/data/pricing.ts).
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: site.name,
+  applicationCategory: 'BusinessApplication',
+  applicationSubCategory: 'Collection and courier management software',
+  operatingSystem: 'Web browser',
+  url: site.url,
+  description: site.description,
+  ...(pricing.confirmed && {
+    offers: pricing.plans.flatMap((plan) =>
+      [
+        { amount: plan.monthly, unit: 'MON' },
+        { amount: plan.yearly, unit: 'ANN' },
+      ].map((price) => ({
+        '@type': 'Offer',
+        name: plan.name,
+        price: price.amount,
+        priceCurrency: pricing.currency,
+        priceSpecification: {
+          '@type': 'UnitPriceSpecification',
+          price: price.amount,
+          priceCurrency: pricing.currency,
+          billingDuration: 1,
+          unitCode: price.unit,
+          valueAddedTaxIncluded: false,
+        },
+      })),
+    ),
+  }),
+};
+---
+
+<Base
+  title={`Pricing from ${formatPrice(fromPrice)} a month`}
+  description={`First Mile Manager pricing for small couriers and hauliers: from ${formatPrice(fromPrice)} a month by active vehicles, with unlimited drivers and clients and no contract.`}
+  breadcrumbs={[{ name: 'Pricing', href: '/pricing' }]}
+  schema={[softwareSchema, faqSchema(faqs)]}
+>
+  {
+    !pricing.confirmed && (
+      <div class="border-b border-roadmap/30 bg-roadmap-wash">
+        <p class="container-page py-3 text-sm font-semibold text-roadmap">
+          Draft pricing for review. These figures are proposals and are not yet confirmed.
+        </p>
+      </div>
+    )
+  }
+
+  <PageHeader eyebrow="Pricing" title="Pay for the vehicles you run" lead={pricing.basis}>
+    <p class="mt-4 font-semibold">{pricing.start}</p>
+  </PageHeader>
+
+  <section class="container-page" aria-labelledby="plans-heading">
+    <h2 id="plans-heading" class="sr-only">Plans</h2>
+    <div class="grid gap-6 lg:grid-cols-3">
+      {
+        pricing.plans.map((plan) => (
+          <article
+            class:list={['flex flex-col rounded-[12px] border p-6 sm:p-8', plan.featured ? 'border-brand ring-2 ring-brand' : 'border-line']}
+          >
+            <h3 class="text-xl font-bold">{plan.name}</h3>
+            <p class="mt-2 text-ink-soft">{plan.bestFor}</p>
+            <p class="mt-6">
+              <span class="text-4xl font-bold">{formatPrice(plan.monthly)}</span>
+              <span class="text-ink-soft"> a month</span>
+            </p>
+            <p class="mt-1 text-sm text-muted">
+              or {formatPrice(plan.yearly)} a year. {pricing.vatNote}
+            </p>
+            <p class="mt-6 font-semibold">Up to {plan.vehicles} active vehicles</p>
+            <p class="mt-6 rounded-lg bg-brand-wash px-4 py-3 text-sm text-brand-strong">
+              Founding partners: <strong>{formatPrice(plan.monthly / 2)} a month</strong> for 12 months
+            </p>
+            <a href="/early-access" class:list={['btn mt-6', plan.featured ? 'btn-primary' : 'btn-secondary']}>
+              Apply for early access
+            </a>
+          </article>
+        ))
+      }
+    </div>
+    <div class="mt-6 max-w-3xl space-y-3 text-ink-soft">
+      <p>{pricing.activeVehicle} {pricing.yearly}</p>
+      <p>
+        Texts to your clients cost {formatPence(pricing.texts.price)} each, billed every quarter. Texts to your own team and all emails are free.
+      </p>
+      <p>
+        {pricing.beyond} <a href={`mailto:${site.email}`} class="link">{site.email}</a>
+      </p>
+    </div>
+  </section>
+
+  <section class="container-page mt-16 grid gap-10 lg:grid-cols-2">
+    <div>
+      <h2 class="text-2xl font-bold tracking-tight">Every plan includes</h2>
+      <ul class="mt-6 space-y-3">
+        {
+          pricing.included.map((item) => (
+            <li class="flex gap-3">
+              <span aria-hidden="true" class="mt-1 font-bold text-brand-strong">✓</span>
+              <span>{item}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="rounded-[12px] bg-wash p-6 sm:p-8">
+      <h2 class="text-2xl font-bold tracking-tight">Founding partner offer</h2>
+      <p class="mt-3 text-ink-soft">For the first {pricing.foundingPartner.places} couriers and hauliers to join during early access.</p>
+      <ul class="mt-6 space-y-3">
+        {
+          [pricing.foundingPartner.discount, pricing.foundingPartner.lock].map((item) => (
+            <li class="flex gap-3">
+              <span aria-hidden="true" class="mt-1 font-bold text-brand-strong">✓</span>
+              <span>{item}</span>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/early-access" class="btn btn-primary mt-8">Apply for early access</a>
+    </div>
+  </section>
+
+  <Faq items={faqs} />
+  <CtaBand />
+</Base>
