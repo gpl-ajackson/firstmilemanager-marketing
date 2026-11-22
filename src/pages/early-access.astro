@@ -4,11 +4,12 @@ import Faq from '../components/Faq.astro';
 import PageHeader from '../components/PageHeader.astro';
 import { faqSchema, type FaqItem } from '../data/schema';
 import { site } from '../data/site';
+import { formatPrice, fromPrice } from '../data/pricing';
 
 const startLink = site.earlyAccess.startLink;
 
 const gets = [
-  'First Mile Manager for your business while it is in early access, with nothing to pay',
+  'First Mile Manager for your business, with nothing to pay until your first collection round in it',
   'Every new part as soon as it is ready, before anyone else',
   'A direct say in what we build next, and in what order',
   'Help from the people who build it, by email and on a call',
@@ -33,7 +34,7 @@ const faqs: FaqItem[] = [
   },
   {
     question: 'What does it cost?',
-    answer: 'Nothing while you are in early access. We will tell you our prices well before you pay anything, and you can stop at any time.',
+    answer: `Nothing until your first collection round in First Mile Manager, however long setting up takes. Then plans start at ${formatPrice(fromPrice)} a month plus VAT, and founding partners pay half for their first 12 months. There is no contract, and you can stop at any time. Our pricing page has every plan.`,
   },
   {
     question: 'What happens after I apply?',
@@ -45,7 +46,7 @@ const faqs: FaqItem[] = [
 
 <Base
   title="Apply for early access"
-  description="Try First Mile Manager early, with nothing to pay, and help shape how bookings, collection rounds and billing work for small couriers and hauliers."
+  description="Try First Mile Manager early, pay nothing until your first collection round, and help shape bookings, rounds and billing for small couriers and hauliers."
   breadcrumbs={[{ name: 'Early access', href: '/early-access' }]}
   schema={[faqSchema(faqs)]}
 >
